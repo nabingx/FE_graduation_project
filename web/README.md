@@ -7,6 +7,11 @@ Dự án này là một code base cơ bản cho ứng dụng ReactJS sử dụng
 ## Cấu trúc thư mục
 
 ```plaintext
+public/
+├── assets         # Lưu trữ các file tĩnh như hình ảnh, font, ...
+│       ├── images/   # Chứa hình ảnh
+│       ├── fonts/    # Chứa font
+│       ├── icons/    # Chứa icon
 src/
 ├── common/            # Chứa các tiện ích, cấu hình chung
 ├── pages/             # Chứa các trang giao diện chính
