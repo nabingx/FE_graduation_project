@@ -25,6 +25,12 @@ src/
 ├── index.tsx          # Entry point của ứng dụng
 
 ```
+
+## Cài đặt
+Khi clone dự án về, chạy lệnh sau để cài đặt các thư viện cần thiết:
+
+### `npm install`
+
 ## Available Scripts
 
 In the project directory, you can run:
