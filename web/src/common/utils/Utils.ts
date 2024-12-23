@@ -1,6 +1,6 @@
 import React from "react";
-import StorageService from "../service/StorageService";
-import Constants from "../constants/Constants";
+// import StorageService from "../service/StorageService";
+// import Constants from "../constants/Constants";
 class Utils {
     /**
      *
@@ -38,24 +38,24 @@ export function checkLength(arr: any[], length?: number) {
     }
     return check
 }
-export const checkPermission = (permissionCode: any) => {
-    let result = false;
-    let listRole: any = StorageService.getArrayFromLS(Constants.ROLE)
-    let dataUser = StorageService.getObjectStore('data-user')
-    if (checkLength(listRole)) {
-        if(permissionCode=== 'permission' && dataUser.super_admin === 1){
-            result = true
-        }else{
-            let listPermission: any = listRole.map((item:any) =>  {return item.name});
-            if (listPermission && listPermission.length > 0) {
-                if (listPermission.includes(permissionCode)) {
-                    result = true
-                }
-            }
-        }
-    }
-    return result;
-}
+// export const checkPermission = (permissionCode: any) => {
+//     let result = false;
+//     let listRole: any = StorageService.getArrayFromLS(Constants.ROLE)
+//     let dataUser = StorageService.getObjectStore('data-user')
+//     if (checkLength(listRole)) {
+//         if(permissionCode=== 'permission' && dataUser.super_admin === 1){
+//             result = true
+//         }else{
+//             let listPermission: any = listRole.map((item:any) =>  {return item.name});
+//             if (listPermission && listPermission.length > 0) {
+//                 if (listPermission.includes(permissionCode)) {
+//                     result = true
+//                 }
+//             }
+//         }
+//     }
+//     return result;
+// }
 
 export function checkPhoneNumber(phoneNumber: any) {
     const phoneRegex = /^(0?)(3[2-9]|5[2|6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/
