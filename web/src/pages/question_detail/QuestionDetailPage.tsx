@@ -1,28 +1,32 @@
 import axios from 'axios';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
     useMediaQuery,
     Stack,
     Typography,
     Divider,
-} from "@mui/material";
-
+    IconButton,
+    Box,
+    Button,
+    Modal,
+} from '@mui/material';
 import LoadingScreen from '../../components/LoadingScreen';
-
-// import "./CreateQuestion.scss";
-
-import { apiURL } from "../../common/constant";
-import { apiConfig } from "../../common/service/BaseService";
+import { apiURL } from '../../common/constant';
+import { apiConfig } from '../../common/service/BaseService';
 import Question from '../../components/common/Question';
 import DefaultLayout from '../../components/layout/default_layout';
+import { MoreVert } from '@mui/icons-material';
+import { observer } from "mobx-react";
+import {exportQuestionStore} from "./ExportQuestionStore";
 
-export default function QuestionDetailsPage() {
-
+const QuestionDetailsPage = () => {
     const accessToken = localStorage.getItem('auth_token');
     const smUp = useMediaQuery('(min-width:700px)');
     const mdUp = useMediaQuery('(min-width:1000px)');
     const lgUp = useMediaQuery('(min-width:1400px)');
 
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [questionList, setQuestionList] = useState<Array<any>>([]);
 
@@ -30,17 +34,47 @@ export default function QuestionDetailsPage() {
         getPageData();
     }, []);
 
+    const handleOpenModal = (topic: string) => {
+        setSelectedTopic(topic);
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setSelectedTopic(null);
+    };
+
+    const handleAction = async (action: string) => {
+        if (!selectedTopic) return;
+
+        switch (action) {
+            case 'Export Aiken':
+                exportQuestionStore.dataExportQuestion.name = selectedTopic;
+                await exportQuestionStore.fetchExportQuestion();
+                break;
+            case 'Export Moodle':
+                exportQuestionStore.dataExportQuestion.name = selectedTopic;
+                await exportQuestionStore.fetchExportQuestionMoodle();
+                break;
+            case 'Edit Question':
+                console.log(`Edit Question for topic: ${selectedTopic}`);
+                break;
+            default:
+                console.log(`Unknown action: ${action}`);
+        }
+        handleCloseModal();
+    };
+
     const getPageData = () => {
         setLoading(true);
-        axios.get(`${apiURL}/user-all-topics-questions`,
-            {
+        axios
+            .get(`${apiURL}/user-all-topics-questions`, {
                 headers: {
                     ...apiConfig,
-                    "Authorization": `Bearer ${accessToken}`,
-                }
-            }
-        )
-            .then(res => {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+            .then((res) => {
                 if (res?.data?.status === 200) {
                     let data = res?.data?.data;
                     let list: Array<any> = [];
@@ -53,17 +87,17 @@ export default function QuestionDetailsPage() {
                     setQuestionList(list);
                 }
                 setLoading(false);
-                console.log(res);
             })
-            .catch(err => {
+            .catch((err) => {
                 setLoading(false);
                 console.error(err);
             });
-    }
+    };
 
     return (
         <DefaultLayout>
-            <Stack gap={3}
+            <Stack
+                gap={3}
                 sx={{
                     background: '#F2F2F2',
                     overflow: 'auto',
@@ -71,51 +105,101 @@ export default function QuestionDetailsPage() {
                 }}
             >
                 <LoadingScreen loading={loading} />
-                <Typography variant="h2" sx={{ textAlign: 'center', }}>
-                    All generated question of user
+                <Typography variant="h2" sx={{ textAlign: 'center' }}>
+                    All generated questions of user
                 </Typography>
 
                 <Stack gap={6}>
-                    {
-                        questionList?.length ?
-                            questionList?.map((topics, index) => {
-                                return (
-                                    <>
-                                        <Stack key={topics?.topic}
-                                            gap={4}
-                                            sx={{
-                                                background: 'white',
-                                                padding: '32px',
-                                            }}
-                                        >
-                                            <Typography variant="h3">
-                                                Topic:&nbsp;
-                                                <span style={{ fontStyle: 'italic' }}>
-                                                    {topics.topic}
-                                                </span>
-                                            </Typography>
-                                            {
-                                                topics.questions?.length ?
-                                                    topics.questions?.map((question: any) => {
-                                                        return (
-                                                            <>
-                                                                <Question
-                                                                    {...question}
-                                                                />
-                                                                <Divider />
-                                                            </>
-                                                        )
-                                                    }) :
-                                                    <Typography variant="body2">No question found</Typography>
-                                            }
-                                        </Stack>
-                                    </>
-                                )
-                            })
-                            : 'No questions found'
-                    }
+                    {questionList?.length ? (
+                        questionList.map((topics, index) => (
+                            <Stack
+                                key={topics?.topic}
+                                gap={4}
+                                sx={{
+                                    background: 'white',
+                                    padding: '32px',
+                                    position: 'relative',
+                                }}
+                            >
+                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h3">
+                                        Topic:&nbsp;
+                                        <span style={{ fontStyle: 'italic' }}>{topics.topic}</span>
+                                    </Typography>
+                                    <IconButton
+                                        sx={{
+                                            position: 'absolute',
+                                            top: '16px',
+                                            right: '16px',
+                                        }}
+                                        onClick={() => handleOpenModal(topics.topic)}
+                                    >
+                                        <MoreVert />
+                                    </IconButton>
+                                </Stack>
+                                {topics.questions?.length ? (
+                                    topics.questions.map((question: any) => (
+                                        <React.Fragment key={question.id}>
+                                            <Question {...question} />
+                                            <Divider />
+                                        </React.Fragment>
+                                    ))
+                                ) : (
+                                    <Typography variant="body2">No question found</Typography>
+                                )}
+                            </Stack>
+                        ))
+                    ) : (
+                        <Typography variant="body2">No questions found</Typography>
+                    )}
                 </Stack>
-            </Stack >
+
+                {/* Modal */}
+                <Modal open={openModal} onClose={handleCloseModal}>
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 400,
+                            bgcolor: 'background.paper',
+                            boxShadow: 24,
+                            p: 4,
+                            borderRadius: '8px',
+                        }}
+                    >
+                        <Typography variant="h6" mb={2}>
+                            Options for {selectedTopic}
+                        </Typography>
+                        <Stack spacing={2}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => handleAction('Export Aiken')}
+                            >
+                                Export Question Aiken
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => handleAction('Export Moodle')}
+                            >
+                                Export Questions Moodle
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="info"
+                                onClick={() => handleAction('Edit Question')}
+                            >
+                                Edit Question
+                            </Button>
+                        </Stack>
+                    </Box>
+                </Modal>
+            </Stack>
         </DefaultLayout>
     );
 };
+
+export default observer(QuestionDetailsPage);

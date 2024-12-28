@@ -15,6 +15,10 @@ class StorageService {
     static clearToken() {
         localStorage.removeItem(this.tokenKey);
     }
+
+    public static isTokenExits() {
+        return StorageService.getToken() !== null;
+    }
 }
 
 export default StorageService;

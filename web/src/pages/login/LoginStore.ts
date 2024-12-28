@@ -1,30 +1,41 @@
-import { makeAutoObservable } from "mobx";
+import {makeAutoObservable, toJS} from "mobx";
+import { HttpStatusCode } from "axios";
+import {loginService} from "./LoginService";
+import {toastUtils} from "../../common/utils/Toastutils";
 
 class LoginStore {
-    username: string = "";
-    password: string = "";
-    isAuthenticated: boolean = false;
+
+    dataRegister: {
+        email: string;
+        username: string;
+        password: string;
+    } = {
+        email: "",
+        username: "",
+        password: "",
+    }
 
     constructor() {
         makeAutoObservable(this);
     }
 
-    setUsername(username: string) {
-        this.username = username;
-    }
-
-    setPassword(password: string) {
-        this.password = password;
-    }
-
-    authenticate(username: string, password: string): boolean {
-        if (username === "admin" && password === "password") {
-            this.isAuthenticated = true;
-            return true;
+    async fetchRegister() {
+        let {email, username, password} = this.dataRegister;
+        const params = {
+            email: email,
+            username: username,
+            password: password,
+        };
+        const result = await loginService.fetchRegister(params);
+        if (result.status === HttpStatusCode.Ok) {
+            toastUtils.success("Tạo tài khoản thành công", "");
+        } else {
+            toastUtils.error("Tạo tài khoản thất bại", "");
         }
-        return false;
     }
+
+
+
 }
 
-const loginStore = new LoginStore();
-export default loginStore;
+export const loginStore = new LoginStore();
