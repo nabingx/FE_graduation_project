@@ -162,7 +162,7 @@ export default function Question(props: any) {
                 borderRadius: '4px',
                 padding: '10px',
             }}>
-                Nội dung câu đầu: {context}
+                Nội dung câu đầu vào: {context}
             </Typography>
 
             <Typography sx={{
