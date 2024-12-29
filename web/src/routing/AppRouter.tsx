@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import LoginPage from "../pages/login/LoginPage";
 import CreateQuestionPage from "../pages/create_question/CreateQuestionPage";
 import QuestionDetailPage from "../pages/question_detail/QuestionDetailPage";
+import InforUserPage from "../pages/infor_user/InforUserPage";
 
 const AppRouter: React.FC = () => {
     let user_token = typeof window !== 'undefined'
@@ -35,12 +36,21 @@ const AppRouter: React.FC = () => {
                     : <QuestionDetailPage />
                 }
                 />
+                <Route path="/infor-user" element={!user_token ?
+                    <Navigate to={'/'} />
+                    : <InforUserPage />
+                }
+                />
                 <Route path="*"
                     element={user_token ?
                         <Navigate to={'/'} />
                         : <Navigate to={'/login'} />
                     }
                 />
+                <Route path="/register"
+
+
+               />
             </Routes>
         </Router>
     );

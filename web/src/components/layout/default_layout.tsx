@@ -6,6 +6,7 @@ import { NavigateButton } from "../common";
 import HomeIcon from '@mui/icons-material/Home';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import {UserOutlined} from "@ant-design/icons";
 
 interface INavItem {
     path: string;
@@ -61,6 +62,11 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
                         })
                     }
                 </Stack>
+                <UserOutlined
+                    style={{marginLeft: "500px", fontSize: "30px" }}
+                    onClick={() => window.location.href = "/infor-user"}
+                />
+
                 <NavigateButton onClick={handleLogout}>
                     Logout
                 </NavigateButton>
