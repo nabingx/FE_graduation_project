@@ -39,6 +39,10 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
         window.location.reload();
     }
 
+    const handleRedirect = (path: string) => {
+        window.location.href = path;
+    }
+
     return (
         <Stack gap={1} sx={{ height: '100vh' }}>
             <Stack direction={"row"}
@@ -50,11 +54,11 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
                     {
                         navigateList?.map((item: INavItem) => {
                             return (
-                                <NavigateButton key={item.path}>
-                                    <Link to={item.path}>
+                                <NavigateButton key={item.path} onClick={() => handleRedirect(item.path)}>
+                                    <Link to="#">
                                         <Stack direction={"row"} gap={1}>
                                             {item.icon}
-                                            <span>{item.label}</span>
+                                            <span style={{whiteSpace: 'nowrap'}}>{item.label}</span>
                                         </Stack>
                                     </Link>
                                 </NavigateButton>
@@ -62,14 +66,17 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
                         })
                     }
                 </Stack>
-                <UserOutlined
-                    style={{marginLeft: "500px", fontSize: "30px" }}
-                    onClick={() => window.location.href = "/infor-user"}
-                />
+                <Stack direction={"row"} gap={2}>
+                    <UserOutlined
+                        style={{marginLeft: "500px", fontSize: "30px" }}
+                        onClick={() => handleRedirect("/infor-user")}
+                        title="Thông tin cá nhân"
+                    />
 
-                <NavigateButton onClick={handleLogout}>
-                    Logout
-                </NavigateButton>
+                    <NavigateButton onClick={handleLogout}>
+                        Logout
+                    </NavigateButton>
+                </Stack>
 
             </Stack>
 

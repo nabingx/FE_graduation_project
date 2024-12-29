@@ -1,4 +1,5 @@
 import axios from "axios";
+import moment from "moment";
 import { useState } from "react";
 import { observer } from "mobx-react";
 import { Button, Form, Input, Modal } from "antd";
@@ -35,6 +36,8 @@ const LoginPage = () => {
                 if (response?.data?.token) {
                     // Lưu token vào localStorage
                     StorageService.saveToken(response?.data?.token);
+                    // Lưu thời gian đăng nhập vào localStorage
+                    localStorage.setItem('login_time', moment().format('YYYY-MM-DD HH:mm:ss'));
                     window.location.href = '/question_detail';
                 } else {
                     setError(true);

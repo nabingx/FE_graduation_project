@@ -5,6 +5,8 @@ import {
     Stack,
     Typography,
     Divider,
+    FormControlLabel,
+    Checkbox,
     IconButton,
     Box,
     Button,
@@ -17,7 +19,7 @@ import Question from '../../components/common/Question';
 import DefaultLayout from '../../components/layout/default_layout';
 import { MoreVert } from '@mui/icons-material';
 import { observer } from "mobx-react";
-import {exportQuestionStore} from "./ExportQuestionStore";
+import { exportQuestionStore } from "./ExportQuestionStore";
 
 const QuestionDetailsPage = () => {
     const accessToken = localStorage.getItem('auth_token');
@@ -29,6 +31,8 @@ const QuestionDetailsPage = () => {
     const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [questionList, setQuestionList] = useState<Array<any>>([]);
+
+    const [isShowCorrectAnswer, setIsShowCorrectAnswer] = useState<boolean>(false);
 
     useEffect(() => {
         getPageData();
@@ -105,9 +109,17 @@ const QuestionDetailsPage = () => {
                 }}
             >
                 <LoadingScreen loading={loading} />
-                <Typography variant="h2" sx={{ textAlign: 'center' }}>
-                    All generated questions of user
+                <Typography variant="h2" sx={{ textAlign: 'center', }}>
+                    Danh sách các câu hỏi được tạo ra bởi người dùng
                 </Typography>
+
+                <FormControlLabel
+                    label="Hiện đáp án đúng"
+                    control={<Checkbox
+                        checked={isShowCorrectAnswer}
+                        onChange={(e) => setIsShowCorrectAnswer(e.target.checked)}
+                    />}
+                />
 
                 <Stack gap={6}>
                     {questionList?.length ? (
@@ -123,7 +135,7 @@ const QuestionDetailsPage = () => {
                             >
                                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                                     <Typography variant="h3">
-                                        Topic:&nbsp;
+                                        Chủ đề:&nbsp;
                                         <span style={{ fontStyle: 'italic' }}>{topics.topic}</span>
                                     </Typography>
                                     <IconButton
@@ -140,17 +152,20 @@ const QuestionDetailsPage = () => {
                                 {topics.questions?.length ? (
                                     topics.questions.map((question: any) => (
                                         <React.Fragment key={question.id}>
-                                            <Question {...question} />
+                                            <Question
+                                                isShowCorrectAnswer={isShowCorrectAnswer}
+                                                {...question}
+                                            />
                                             <Divider />
                                         </React.Fragment>
                                     ))
                                 ) : (
-                                    <Typography variant="body2">No question found</Typography>
+                                    <Typography variant="body2">Chưa có câu hỏi nào được tạo</Typography>
                                 )}
                             </Stack>
                         ))
                     ) : (
-                        <Typography variant="body2">No questions found</Typography>
+                        <Typography variant="body2">Chưa có câu hỏi nào được tạo</Typography>
                     )}
                 </Stack>
 
