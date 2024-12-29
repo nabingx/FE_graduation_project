@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import moment from "moment";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import LoginPage from "../pages/login/LoginPage";
@@ -11,6 +12,19 @@ const AppRouter: React.FC = () => {
         && (window.localStorage.getItem("auth_token"))
         ? (window.localStorage.getItem("auth_token"))
         : "";
+    useEffect(() => {
+        if (localStorage?.getItem("login_time")) {
+            /// check thời gian hết hạn của token
+            var login_time = moment(localStorage.getItem("login_time"));
+            var now = moment();
+            var diff = login_time.diff(now, 'hours', true);
+            if (Math.abs(diff) > 3) {   /// token hết hạn sau 3 tiếng
+                localStorage.removeItem("auth_token");
+                localStorage.removeItem("login_time");
+                window.location.reload();
+            }
+        }
+    }, [])
     return (
         <Router>
             <Routes>
