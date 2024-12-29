@@ -5,6 +5,8 @@ import {
     Stack,
     Typography,
     Divider,
+    FormControlLabel,
+    Checkbox,
 } from "@mui/material";
 
 import LoadingScreen from '../../components/LoadingScreen';
@@ -25,6 +27,8 @@ export default function QuestionDetailsPage() {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [questionList, setQuestionList] = useState<Array<any>>([]);
+
+    const [isShowCorrectAnswer, setIsShowCorrectAnswer] = useState<boolean>(false);
 
     useEffect(() => {
         getPageData();
@@ -72,8 +76,16 @@ export default function QuestionDetailsPage() {
             >
                 <LoadingScreen loading={loading} />
                 <Typography variant="h2" sx={{ textAlign: 'center', }}>
-                    All generated question of user
+                    Danh sách các câu hỏi được tạo ra bởi người dùng
                 </Typography>
+
+                <FormControlLabel
+                    label="Hiện đáp án đúng"
+                    control={<Checkbox
+                        checked={isShowCorrectAnswer}
+                        onChange={(e) => setIsShowCorrectAnswer(e.target.checked)}
+                    />}
+                />
 
                 <Stack gap={6}>
                     {
@@ -89,7 +101,7 @@ export default function QuestionDetailsPage() {
                                             }}
                                         >
                                             <Typography variant="h3">
-                                                Topic:&nbsp;
+                                                Chủ đề:&nbsp;
                                                 <span style={{ fontStyle: 'italic' }}>
                                                     {topics.topic}
                                                 </span>
@@ -100,13 +112,14 @@ export default function QuestionDetailsPage() {
                                                         return (
                                                             <>
                                                                 <Question
+                                                                    isShowCorrectAnswer={isShowCorrectAnswer}
                                                                     {...question}
                                                                 />
                                                                 <Divider />
                                                             </>
                                                         )
                                                     }) :
-                                                    <Typography variant="body2">No question found</Typography>
+                                                    <Typography variant="body2">Chưa có câu hỏi nào được tạo</Typography>
                                             }
                                         </Stack>
                                     </>

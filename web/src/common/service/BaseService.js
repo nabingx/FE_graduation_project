@@ -4,4 +4,10 @@ const apiConfig = {
     'Content-Type': 'application/json',
 }
 
-export {apiConfig};
+const multipartApiConfig = {
+    'Access-Control-Allow-Origin': '*',
+    'accept': 'application/json',
+    "Content-type": "multipart/form-data",
+}
+
+export {apiConfig, multipartApiConfig};
