@@ -4,6 +4,7 @@ import {exportQuestionService} from "./ExportQuestionService";
 import {toastUtils} from "../../common/utils/Toastutils";
 
 class ExportQuestionStore {
+    openModal: boolean = false;
 
     dataExportQuestion: {
         uid: string;
@@ -16,34 +17,17 @@ class ExportQuestionStore {
     constructor() {
         makeAutoObservable(this);
     }
-
-    async fetchExportQuestion() {
-        let {name} = this.dataExportQuestion;
-        const params = {
-            uid: "",
-            name: name,
-        };
-        const result = await exportQuestionService.fetchExportQuestion(params);
+    async fetchGetQuestion() {
+        const result = await exportQuestionService.fetchGetQuestion();
         if (result.status === HttpStatusCode.Ok) {
-            toastUtils.success("Export thành công", "");
+            this.dataExportQuestion = result.body.data;
+            console.log("dataQs", toJS(this.dataExportQuestion));
         } else {
-            toastUtils.error("Export error", "");
+            toastUtils.error(result.body.message, "");
         }
     }
 
-    async fetchExportQuestionMoodle() {
-        let {name} = this.dataExportQuestion;
-        const params = {
-            uid: "",
-            name: name,
-        };
-        const result = await exportQuestionService.fetchExportQuestionMoodle(params);
-        if (result.status === HttpStatusCode.Ok) {
-            toastUtils.success("Export thành công", "");
-        } else {
-            toastUtils.error("Export error", "");
-        }
-    }
+
 }
 
 

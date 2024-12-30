@@ -17,7 +17,7 @@ import Question from '../../components/common/Question';
 import DefaultLayout from '../../components/layout/default_layout';
 import { MoreVert } from '@mui/icons-material';
 import { observer } from "mobx-react";
-import {exportQuestionStore} from "./ExportQuestionStore";
+import { exportQuestionStore } from "./ExportQuestionStore";
 
 const QuestionDetailsPage = () => {
     const accessToken = localStorage.getItem('auth_token');
@@ -49,20 +49,106 @@ const QuestionDetailsPage = () => {
 
         switch (action) {
             case 'Export Aiken':
-                exportQuestionStore.dataExportQuestion.name = selectedTopic;
-                await exportQuestionStore.fetchExportQuestion();
+                // Gửi yêu cầu POST tới API để xuất file Aiken
+                await downloadFile(selectedTopic);
                 break;
             case 'Export Moodle':
-                exportQuestionStore.dataExportQuestion.name = selectedTopic;
-                await exportQuestionStore.fetchExportQuestionMoodle();
+                // exportQuestionStore.dataExportQuestion.name = selectedTopic;
+                // await exportQuestionStore.fetchExportQuestionMoodle();
+                await downloadFileXml(selectedTopic);
                 break;
-            case 'Edit Question':
-                console.log(`Edit Question for topic: ${selectedTopic}`);
-                break;
+            // case 'Detail Question':
+            //
+            //     break;
             default:
                 console.log(`Unknown action: ${action}`);
         }
         handleCloseModal();
+    };
+
+    const downloadFile = async (topic: string) => {
+        try {
+            const response = await fetch('http://103.138.113.68/export-questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    uid: '',  // Thay bằng UID thực tế
+                    name: topic,  // Dùng chủ đề đã chọn
+                }),
+            });
+
+            // Kiểm tra xem yêu cầu có thành công không
+            if (!response.ok) {
+                throw new Error('Error downloading file');
+            }
+
+            // Lấy tên file từ header Content-Disposition
+            const disposition = response.headers.get('Content-Disposition');
+            let fileName = 'downloaded_file.txt';
+
+            if (disposition) {
+                const fileNameMatch = disposition.match(/filename="(.+)"/);
+                if (fileNameMatch && fileNameMatch[1]) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+
+            // Tạo blob từ response content và tạo URL tải file
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error downloading the file:', error);
+        }
+    };
+    const downloadFileXml = async (topic: string) => {
+        try {
+            const response = await fetch('http://103.138.113.68/export-questions-moodle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    uid: '',  // Thay bằng UID thực tế
+                    name: topic,  // Dùng chủ đề đã chọn
+                }),
+            });
+
+            // Kiểm tra xem yêu cầu có thành công không
+            if (!response.ok) {
+                throw new Error('Error downloading file');
+            }
+
+            // Lấy tên file từ header Content-Disposition
+            const disposition = response.headers.get('Content-Disposition');
+            let fileName = 'downloaded_file.xml';
+
+            if (disposition) {
+                const fileNameMatch = disposition.match(/filename="(.+)"/);
+                if (fileNameMatch && fileNameMatch[1]) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+
+            // Tạo blob từ response content và tạo URL tải file
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error downloading the file:', error);
+        }
     };
 
     const getPageData = () => {
@@ -187,13 +273,13 @@ const QuestionDetailsPage = () => {
                             >
                                 Export Questions Moodle
                             </Button>
-                            <Button
-                                variant="contained"
-                                color="info"
-                                onClick={() => handleAction('Edit Question')}
-                            >
-                                Edit Question
-                            </Button>
+                            {/*<Button*/}
+                            {/*    variant="contained"*/}
+                            {/*    color="info"*/}
+                            {/*    onClick={() => handleAction('Edit Question')}*/}
+                            {/*>*/}
+                            {/*    Edit Question*/}
+                            {/*</Button>*/}
                         </Stack>
                     </Box>
                 </Modal>

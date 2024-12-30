@@ -1,16 +1,13 @@
-import {postRequest} from "../../common/helpers/RequestHelper";
+import { getRequest} from "../../common/helpers/RequestHelper";
 
 
 class ExportQuestionService {
-    apiExportQuestion = '/export-questions'
-    apiExportQuestionMoodule = '/export-questions-moodle'
+    apiGetQuestion = '/user-all-topics-questions'
 
-    public fetchExportQuestion(params: any): Promise<any> {
-        return postRequest(`${this.apiExportQuestion}`,params);
+    public fetchGetQuestion(): Promise<any> {
+        return getRequest(`${this.apiGetQuestion}`, '');
     }
-    public fetchExportQuestionMoodle(params: any): Promise<any> {
-        return postRequest(`${this.apiExportQuestionMoodule}`,params);
-    }
+
 }
 
 export const exportQuestionService = new ExportQuestionService()
