@@ -40,7 +40,7 @@ const InforUserPage = () => {
     return (
         <DefaultLayout>
             <div className="infor-user">
-                <div className="title-infor">Thông tin cá nhân</div>
+                <div className="title-infor">Thông tin cá nhân </div>
                 <div className="infor-detail">
                     <div className="infor-detail__item">
                         <div className="infor-detail__avatar">

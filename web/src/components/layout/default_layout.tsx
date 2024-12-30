@@ -6,6 +6,7 @@ import { NavigateButton } from "../common";
 import HomeIcon from '@mui/icons-material/Home';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
 import {UserOutlined} from "@ant-design/icons";
 
 interface INavItem {
@@ -32,6 +33,11 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
             label: "All users's questions",
             icon: <FormatListNumberedIcon />,
         },
+        {
+            path: "/newfeeds",
+            label: "Newfeeds",
+            icon: <NewspaperIcon />,
+        }
     ]
 
     const handleLogout = () => {

@@ -6,6 +6,7 @@ import LoginPage from "../pages/login/LoginPage";
 import CreateQuestionPage from "../pages/create_question/CreateQuestionPage";
 import QuestionDetailPage from "../pages/question_detail/QuestionDetailPage";
 import InforUserPage from "../pages/infor_user/InforUserPage";
+import NewfeedsPage from "../pages/newfeeds/NewfeedsPage";
 
 const AppRouter: React.FC = () => {
     let user_token = typeof window !== 'undefined'
@@ -64,6 +65,9 @@ const AppRouter: React.FC = () => {
                 <Route path="/register"
 
 
+               />
+
+               <Route path="/newfeeds" element={<NewfeedsPage/>} 
                />
             </Routes>
         </Router>
