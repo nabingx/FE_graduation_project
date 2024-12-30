@@ -1,15 +1,25 @@
-import { Stack, Typography, Box, Grid2 as Grid, Chip } from "@mui/material";
+import moment from "moment";
 import { useEffect, useState } from "react";
+import { Stack, Typography, Box, Grid2 as Grid, Chip } from "@mui/material";
 import { BasicButton } from "..";
+
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 
 
 export default function Question(props: any) {
     const {
+        isNewQuestion = false,
+        isShowCorrectAnswer = false,
+        context,
         question_text,
         choices,
         correct_choice,
         tags,
-        duplicateCount = 0,
+        duplicate_info = {},
+        average_rating = 0,
+        ratings = [],
+        comments = [],
     } = props;
 
     const correctColor = "#1cc968";
@@ -19,12 +29,29 @@ export default function Question(props: any) {
     const [isClicked, setIsClicked] = useState('');
     const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | null | undefined>(null);
     const [tagList, setTagList] = useState([]);
+    const [commentsList, setCommentsList] = useState<Array<any>>([]);
+    const [showAllComments, setShowAllComments] = useState<boolean>(true);
 
     useEffect(() => {
         if (tags) {
             setTagList(tags.split(',')?.map((tag: string) => tag?.trim()));
         }
     }, [tags])
+
+    useEffect(() => {
+        if (comments && comments.length) {
+            setCommentsList(comments.sort((a: any, b: any) => b.created_at - a.created_at));
+        }
+    }, [comments])
+
+    useEffect(() => {
+        if (isShowCorrectAnswer) {
+            setIsClicked(correct_choice);
+            setIsCorrectAnswer(true);
+        } else {
+            handleRefresh();
+        }
+    }, [isShowCorrectAnswer])
 
     const handleClicked = (choice: string) => {
         if (isClicked !== '') {
@@ -64,7 +91,7 @@ export default function Question(props: any) {
                 </Stack>
 
                 <BasicButton onClick={handleRefresh}>
-                    Refresh
+                    Làm mới
                 </BasicButton>
 
             </Stack>
@@ -113,7 +140,7 @@ export default function Question(props: any) {
                         fontWeight: 'bold',
                     }}
                 >
-                    Tags:
+                    Nhãn:
                 </Typography>
                 {
                     tagList?.map((tag: string, index: number) => {
@@ -130,13 +157,85 @@ export default function Question(props: any) {
                 }
             </Stack>
 
+            <Typography sx={{
+                background: 'white',
+                borderRadius: '4px',
+                padding: '10px',
+            }}>
+                Nội dung câu đầu vào: {context}
+            </Typography>
+
+            <Typography sx={{
+                background: 'white',
+                borderRadius: '4px',
+                padding: '10px',
+            }}>
+                {duplicate_info?.duplicate_questions?.length} câu hỏi tương tự <br />
+                {duplicate_info?.duplicate_answers?.length} câu trả lời tương tự <br />
+            </Typography>
+
             {
-                duplicateCount > 0 ?
-                    <Typography>
-                        {duplicateCount} questions simiate
+                !isNewQuestion &&
+                <>
+                    <Typography sx={{
+                        background: 'white',
+                        borderRadius: '4px',
+                        padding: '10px',
+                    }}>
+                        Số lượt đánh giá: {ratings?.length} <br />
+                        Đánh giá trung bình: {average_rating} <br />
                     </Typography>
-                    : <></>
+
+                    <Stack gap={1} sx={{
+                        background: 'white',
+                        borderRadius: '4px',
+                        padding: '8px',
+                    }}>
+                        <Typography variant="h6">Bình luận ({commentsList?.length})</Typography>
+                        <Typography onClick={() => setShowAllComments(!showAllComments)} alignItems={"center"} sx={{ color: 'blue', textDecoration: 'underline' }}>
+                            {
+                                showAllComments ?
+                                    <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                        <KeyboardDoubleArrowUpIcon />
+                                        Ẩn toàn bộ bình luận
+                                    </Stack>
+                                    :
+                                    <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                        <KeyboardDoubleArrowDownIcon />
+                                        Hiện toàn bộ bình luận
+                                    </Stack>
+                            }
+                        </Typography>
+                        {
+                            showAllComments && commentsList?.map(comment => {
+                                return (
+                                    <Box key={comment?.comment_id} sx={{ border: 'solid 1px #cdcdcd', borderRadius: '4px', padding: '4px' }}>
+                                        <Stack direction={"row"} justifyContent={"space-between"}>
+                                            <Typography variant="body2" sx={{
+                                                fontSize: '16px',
+                                            }}>
+                                                {comment?.username}
+                                            </Typography>
+
+                                            <Stack>
+                                                {comment?.created_at ? moment(comment?.created_at)?.format('YYYY-MM-DD HH:mm:ss') : ''}
+                                            </Stack>
+
+                                        </Stack>
+                                        <Typography variant="caption" sx={{
+                                            fontSize: '14px',
+                                            color: '#999999',
+                                        }}>
+                                            {comment.comment_value}
+                                        </Typography>
+                                    </Box>
+                                )
+                            })
+                        }
+                    </Stack>
+                </>
             }
+
         </Stack>
     )
 }

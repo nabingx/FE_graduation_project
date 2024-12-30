@@ -21,7 +21,7 @@ import { MoreVert } from '@mui/icons-material';
 import { observer } from "mobx-react";
 import { exportQuestionStore } from "./ExportQuestionStore";
 
-const QuestionDetailsPage = () => {
+const NewfeedsPage = () => {
     const accessToken = localStorage.getItem('auth_token');
     const smUp = useMediaQuery('(min-width:700px)');
     const mdUp = useMediaQuery('(min-width:1000px)');
@@ -53,112 +53,26 @@ const QuestionDetailsPage = () => {
 
         switch (action) {
             case 'Export Aiken':
-                // Gửi yêu cầu POST tới API để xuất file Aiken
-                await downloadFile(selectedTopic);
+                exportQuestionStore.dataExportQuestion.name = selectedTopic;
+                await exportQuestionStore.fetchExportQuestion();
                 break;
             case 'Export Moodle':
-                // exportQuestionStore.dataExportQuestion.name = selectedTopic;
-                // await exportQuestionStore.fetchExportQuestionMoodle();
-                await downloadFileXml(selectedTopic);
+                exportQuestionStore.dataExportQuestion.name = selectedTopic;
+                await exportQuestionStore.fetchExportQuestionMoodle();
                 break;
-            // case 'Detail Question':
-            //
-            //     break;
+            case 'Edit Question':
+                console.log(`Edit Question for topic: ${selectedTopic}`);
+                break;
             default:
                 console.log(`Unknown action: ${action}`);
         }
         handleCloseModal();
     };
 
-    const downloadFile = async (topic: string) => {
-        try {
-            const response = await fetch('http://103.138.113.68/export-questions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({
-                    uid: '',  // Thay bằng UID thực tế
-                    name: topic,  // Dùng chủ đề đã chọn
-                }),
-            });
-
-            // Kiểm tra xem yêu cầu có thành công không
-            if (!response.ok) {
-                throw new Error('Error downloading file');
-            }
-
-            // Lấy tên file từ header Content-Disposition
-            const disposition = response.headers.get('Content-Disposition');
-            let fileName = 'downloaded_file.txt';
-
-            if (disposition) {
-                const fileNameMatch = disposition.match(/filename="(.+)"/);
-                if (fileNameMatch && fileNameMatch[1]) {
-                    fileName = fileNameMatch[1];
-                }
-            }
-
-            // Tạo blob từ response content và tạo URL tải file
-            const blob = await response.blob();
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error('Error downloading the file:', error);
-        }
-    };
-    const downloadFileXml = async (topic: string) => {
-        try {
-            const response = await fetch('http://103.138.113.68/export-questions-moodle', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({
-                    uid: '',  // Thay bằng UID thực tế
-                    name: topic,  // Dùng chủ đề đã chọn
-                }),
-            });
-
-            // Kiểm tra xem yêu cầu có thành công không
-            if (!response.ok) {
-                throw new Error('Error downloading file');
-            }
-
-            // Lấy tên file từ header Content-Disposition
-            const disposition = response.headers.get('Content-Disposition');
-            let fileName = 'downloaded_file.xml';
-
-            if (disposition) {
-                const fileNameMatch = disposition.match(/filename="(.+)"/);
-                if (fileNameMatch && fileNameMatch[1]) {
-                    fileName = fileNameMatch[1];
-                }
-            }
-
-            // Tạo blob từ response content và tạo URL tải file
-            const blob = await response.blob();
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (error) {
-            console.error('Error downloading the file:', error);
-        }
-    };
-
     const getPageData = () => {
         setLoading(true);
         axios
-            .get(`${apiURL}/user-all-topics-questions`, {
+            .get(`${apiURL}/random-questions`, {
                 headers: {
                     ...apiConfig,
                     Authorization: `Bearer ${accessToken}`,
@@ -196,7 +110,7 @@ const QuestionDetailsPage = () => {
             >
                 <LoadingScreen loading={loading} />
                 <Typography variant="h2" sx={{ textAlign: 'center', }}>
-                    Danh sách các câu hỏi được tạo ra bởi người dùng
+                    Newsfeed
                 </Typography>
 
                 <FormControlLabel
@@ -288,13 +202,13 @@ const QuestionDetailsPage = () => {
                             >
                                 Export Questions Moodle
                             </Button>
-                            {/*<Button*/}
-                            {/*    variant="contained"*/}
-                            {/*    color="info"*/}
-                            {/*    onClick={() => handleAction('Edit Question')}*/}
-                            {/*>*/}
-                            {/*    Edit Question*/}
-                            {/*</Button>*/}
+                            <Button
+                                variant="contained"
+                                color="info"
+                                onClick={() => handleAction('Edit Question')}
+                            >
+                                Edit Question
+                            </Button>
                         </Stack>
                     </Box>
                 </Modal>
@@ -303,4 +217,4 @@ const QuestionDetailsPage = () => {
     );
 };
 
-export default observer(QuestionDetailsPage);
+export default observer(NewfeedsPage);

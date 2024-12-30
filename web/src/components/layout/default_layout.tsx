@@ -6,6 +6,7 @@ import { NavigateButton } from "../common";
 import HomeIcon from '@mui/icons-material/Home';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import NewspaperIcon from '@mui/icons-material/Newspaper';
 import {UserOutlined} from "@ant-design/icons";
 
 interface INavItem {
@@ -32,11 +33,20 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
             label: "All users's questions",
             icon: <FormatListNumberedIcon />,
         },
+        {
+            path: "/newfeeds",
+            label: "Newfeeds",
+            icon: <NewspaperIcon />,
+        }
     ]
 
     const handleLogout = () => {
         localStorage.removeItem('auth_token');
         window.location.reload();
+    }
+
+    const handleRedirect = (path: string) => {
+        window.location.href = path;
     }
 
     return (
@@ -50,11 +60,11 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
                     {
                         navigateList?.map((item: INavItem) => {
                             return (
-                                <NavigateButton key={item.path}>
-                                    <Link to={item.path}>
+                                <NavigateButton key={item.path} onClick={() => handleRedirect(item.path)}>
+                                    <Link to="#">
                                         <Stack direction={"row"} gap={1}>
                                             {item.icon}
-                                            <span>{item.label}</span>
+                                            <span style={{whiteSpace: 'nowrap'}}>{item.label}</span>
                                         </Stack>
                                     </Link>
                                 </NavigateButton>
@@ -62,14 +72,17 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
                         })
                     }
                 </Stack>
-                <UserOutlined
-                    style={{marginLeft: "500px", fontSize: "30px" }}
-                    onClick={() => window.location.href = "/infor-user"}
-                />
+                <Stack direction={"row"} gap={2}>
+                    <UserOutlined
+                        style={{marginLeft: "500px", fontSize: "30px" }}
+                        onClick={() => handleRedirect("/infor-user")}
+                        title="Thông tin cá nhân"
+                    />
 
-                <NavigateButton onClick={handleLogout}>
-                    Logout
-                </NavigateButton>
+                    <NavigateButton onClick={handleLogout}>
+                        Logout
+                    </NavigateButton>
+                </Stack>
 
             </Stack>
 
