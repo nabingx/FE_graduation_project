@@ -241,14 +241,7 @@ const QuestionDetailsPage = () => {
                                         Chủ đề:&nbsp;
                                         <span style={{ fontStyle: 'italic' }}>{topics.topic}</span>
                                     </Typography>
-                                    <IconButton
-                                        sx={{
-                                            position: 'absolute',
-                                            top: '16px',
-                                            right: '16px',
-                                        }}
-                                        onClick={() => handleOpenModal(topics.topic)}
-                                    >
+                                    <IconButton onClick={() => handleOpenModal(topics.topic)}>
                                         <MoreVert />
                                     </IconButton>
                                 </Stack>
