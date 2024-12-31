@@ -20,6 +20,7 @@ import DefaultLayout from '../../components/layout/default_layout';
 import { MoreVert } from '@mui/icons-material';
 import { observer } from "mobx-react";
 import { exportQuestionStore } from "./ExportQuestionStore";
+import { getRequest } from '../../common/helpers/RequestHelper';
 
 const NewfeedsPage = () => {
     const accessToken = localStorage.getItem('auth_token');
@@ -33,9 +34,11 @@ const NewfeedsPage = () => {
     const [questionList, setQuestionList] = useState<Array<any>>([]);
 
     const [isShowCorrectAnswer, setIsShowCorrectAnswer] = useState<boolean>(false);
+    const [currentUser, setCurrentUser] = useState<any>();
 
     useEffect(() => {
         getPageData();
+        getUserInfo();
     }, []);
 
     const handleOpenModal = (topic: string) => {
@@ -68,6 +71,18 @@ const NewfeedsPage = () => {
         }
         handleCloseModal();
     };
+
+    const getUserInfo = async () => {
+        try {
+            const res = await getRequest('/user-info');
+            if (res?.body?.status === 200) {
+                setCurrentUser(res?.body?.data?.username);
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     const getPageData = () => {
         setLoading(true);
@@ -151,9 +166,12 @@ const NewfeedsPage = () => {
                                 </Stack>
                                 {topics.questions?.length ? (
                                     topics.questions.map((question: any) => (
-                                        <React.Fragment key={question.id}>
+                                        <React.Fragment key={question.question_id + 'index-' + index}>
                                             <Question
                                                 isShowCorrectAnswer={isShowCorrectAnswer}
+                                                canRate={currentUser !== question?.username}
+                                                canComment={currentUser !== question?.username}
+                                                currentUser={currentUser}
                                                 {...question}
                                             />
                                             <Divider />

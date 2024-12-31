@@ -12,16 +12,22 @@ import {
     Button,
     Modal,
 } from '@mui/material';
+import { observer } from "mobx-react";
+import { MoreVert } from '@mui/icons-material';
+import { useSearchParams } from "react-router-dom";
+
 import LoadingScreen from '../../components/LoadingScreen';
-import { apiURL } from '../../common/constant';
-import { apiConfig } from '../../common/service/BaseService';
 import Question from '../../components/common/Question';
 import DefaultLayout from '../../components/layout/default_layout';
-import { MoreVert } from '@mui/icons-material';
-import { observer } from "mobx-react";
 import { exportQuestionStore } from "./ExportQuestionStore";
 
+import { apiURL } from '../../common/constant';
+import { apiConfig } from '../../common/service/BaseService';
+import { getRequest, postRequest } from '../../common/helpers/RequestHelper';
+
 const QuestionDetailsPage = () => {
+    const [searchParams] = useSearchParams();
+    const username = searchParams.get('username');
     const accessToken = localStorage.getItem('auth_token');
     const smUp = useMediaQuery('(min-width:700px)');
     const mdUp = useMediaQuery('(min-width:1000px)');
@@ -33,10 +39,17 @@ const QuestionDetailsPage = () => {
     const [questionList, setQuestionList] = useState<Array<any>>([]);
 
     const [isShowCorrectAnswer, setIsShowCorrectAnswer] = useState<boolean>(false);
+    const [currentUser, setCurrentUser] = useState<any>();
 
     useEffect(() => {
-        getPageData();
+        getUserInfo();
     }, []);
+
+    useEffect(() => {
+        if (currentUser) {
+            getPageData(username || currentUser);
+        }
+    }, [currentUser, username])
 
     const handleOpenModal = (topic: string) => {
         setSelectedTopic(topic);
@@ -155,33 +168,37 @@ const QuestionDetailsPage = () => {
         }
     };
 
-    const getPageData = () => {
+    const getUserInfo = async () => {
+        try {
+            const res = await getRequest('/user-info');
+            if (res?.body?.status === 200) {
+                setCurrentUser(res?.body?.data?.username);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const getPageData = async (username: string) => {
         setLoading(true);
-        axios
-            .get(`${apiURL}/user-all-topics-questions`, {
-                headers: {
-                    ...apiConfig,
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            })
-            .then((res) => {
-                if (res?.data?.status === 200) {
-                    let data = res?.data?.data;
-                    let list: Array<any> = [];
-                    for (var key in data) {
-                        list.push({
-                            topic: key,
-                            questions: data[key],
-                        });
-                    }
-                    setQuestionList(list);
+        try {
+            var result = await getRequest(`/other-user-all-topics-questions?identifier=${username}`);
+            setLoading(false);
+            if (result?.status === 200) {
+                let data = result?.body?.data;
+                let list: Array<any> = [];
+                for (var key in data) {
+                    list.push({
+                        topic: key,
+                        questions: data[key],
+                    });
                 }
-                setLoading(false);
-            })
-            .catch((err) => {
-                setLoading(false);
-                console.error(err);
-            });
+                setQuestionList(list);
+            }
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
     };
 
     return (
@@ -236,10 +253,13 @@ const QuestionDetailsPage = () => {
                                     </IconButton>
                                 </Stack>
                                 {topics.questions?.length ? (
-                                    topics.questions.map((question: any) => (
-                                        <React.Fragment key={question.id}>
+                                    topics.questions.map((question: any, index: number) => (
+                                        <React.Fragment key={question.question_id + 'index-' + index}>
                                             <Question
                                                 isShowCorrectAnswer={isShowCorrectAnswer}
+                                                currentUser={currentUser}
+                                                canRate={currentUser !== question?.username}
+                                                canComment={currentUser !== question?.username}
                                                 {...question}
                                             />
                                             <Divider />
