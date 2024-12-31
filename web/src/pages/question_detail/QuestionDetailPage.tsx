@@ -20,6 +20,7 @@ import DefaultLayout from '../../components/layout/default_layout';
 import { MoreVert } from '@mui/icons-material';
 import { observer } from "mobx-react";
 import { exportQuestionStore } from "./ExportQuestionStore";
+import { getRequest } from '../../common/helpers/RequestHelper';
 
 const QuestionDetailsPage = () => {
     const accessToken = localStorage.getItem('auth_token');
@@ -33,9 +34,11 @@ const QuestionDetailsPage = () => {
     const [questionList, setQuestionList] = useState<Array<any>>([]);
 
     const [isShowCorrectAnswer, setIsShowCorrectAnswer] = useState<boolean>(false);
+    const [currentUser, setCurrentUser] = useState<any>();
 
     useEffect(() => {
         getPageData();
+        getUserInfo();
     }, []);
 
     const handleOpenModal = (topic: string) => {
@@ -155,6 +158,18 @@ const QuestionDetailsPage = () => {
         }
     };
 
+    const getUserInfo = async () => {
+        try {
+            const res = await getRequest('/user-info');
+            if (res?.data?.status === 200) {
+                setCurrentUser(res?.data?.username);
+            }
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const getPageData = () => {
         setLoading(true);
         axios
@@ -240,6 +255,7 @@ const QuestionDetailsPage = () => {
                                         <React.Fragment key={question.id}>
                                             <Question
                                                 isShowCorrectAnswer={isShowCorrectAnswer}
+                                                currentUser={currentUser}
                                                 {...question}
                                             />
                                             <Divider />

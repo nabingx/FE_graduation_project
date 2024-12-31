@@ -1,16 +1,19 @@
+import axios from "axios";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { Stack, Typography, Box, Grid2 as Grid, Chip } from "@mui/material";
+import { Stack, Typography, Box, Grid2 as Grid, Chip, Rating } from "@mui/material";
 import { BasicButton } from "..";
 
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
-
+import { postRequest } from "../../../common/helpers/RequestHelper";
 
 export default function Question(props: any) {
     const {
+        question_id,
         isNewQuestion = false,
         isShowCorrectAnswer = false,
+        currentUser = '',
         context,
         question_text,
         choices,
@@ -20,6 +23,8 @@ export default function Question(props: any) {
         average_rating = 0,
         ratings = [],
         comments = [],
+        canComment = false,
+        canRate = false,
     } = props;
 
     const correctColor = "#1cc968";
@@ -31,6 +36,8 @@ export default function Question(props: any) {
     const [tagList, setTagList] = useState([]);
     const [commentsList, setCommentsList] = useState<Array<any>>([]);
     const [showAllComments, setShowAllComments] = useState<boolean>(true);
+
+    const [ratingValue, setRatingValue] = useState<number | null>(ratings?.find((t: any) => t.username === currentUser)?.rating_value);
 
     useEffect(() => {
         if (tags) {
@@ -64,6 +71,15 @@ export default function Question(props: any) {
     const handleRefresh = () => {
         setIsClicked('');
         setIsCorrectAnswer(null);
+    }
+
+    const handleRating = async (rate: number | null) => {
+        let apiBody = {
+            uid: currentUser,
+            question_id,
+            rate,
+        }
+        const res = await postRequest('/rating-questions', apiBody)
     }
 
     return (
@@ -182,9 +198,37 @@ export default function Question(props: any) {
                         borderRadius: '4px',
                         padding: '10px',
                     }}>
-                        Số lượt đánh giá: {ratings?.length} <br />
-                        Đánh giá trung bình: {average_rating} <br />
+                        Số lượt đánh giá: {ratings?.length}
+                        <br />
+                        <Stack direction={"row"} gap={2} alignItems={"center"}>
+                            <Typography>
+                                Đánh giá trung bình:
+                            </Typography>
+                            <Rating
+                                precision={0.5}
+                                value={average_rating}
+                                readOnly
+                            />
+                        </Stack>
                     </Typography>
+                    {
+                        canRate && 
+                        <Typography sx={{
+                            background: 'white',
+                            borderRadius: '4px',
+                            padding: '10px',
+                        }}>
+                            <Rating
+                                value={ratingValue}
+                                onChange={(event, newValue) => {
+                                    if (ratingValue !== newValue) {
+                                        setRatingValue(newValue);
+                                        handleRating(newValue);
+                                    }
+                                }}
+                            />
+                        </Typography>
+                    }
 
                     <Stack gap={1} sx={{
                         background: 'white',
