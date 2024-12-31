@@ -75,8 +75,8 @@ const NewfeedsPage = () => {
     const getUserInfo = async () => {
         try {
             const res = await getRequest('/user-info');
-            if (res?.data?.status === 200) {
-                setCurrentUser(res?.data?.username);
+            if (res?.body?.status === 200) {
+                setCurrentUser(res?.body?.data?.username);
             }
 
         } catch (error) {
@@ -166,10 +166,12 @@ const NewfeedsPage = () => {
                                 </Stack>
                                 {topics.questions?.length ? (
                                     topics.questions.map((question: any) => (
-                                        <React.Fragment key={question.id}>
+                                        <React.Fragment key={question.question_id + 'index-' + index}>
                                             <Question
                                                 isShowCorrectAnswer={isShowCorrectAnswer}
                                                 canRate={currentUser !== question?.username}
+                                                canComment={currentUser !== question?.username}
+                                                currentUser={currentUser}
                                                 {...question}
                                             />
                                             <Divider />
