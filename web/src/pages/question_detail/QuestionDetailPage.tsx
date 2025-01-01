@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
     useMediaQuery,
@@ -19,11 +18,8 @@ import { useSearchParams } from "react-router-dom";
 import LoadingScreen from '../../components/LoadingScreen';
 import Question from '../../components/common/Question';
 import DefaultLayout from '../../components/layout/default_layout';
-import { exportQuestionStore } from "./ExportQuestionStore";
 
-import { apiURL } from '../../common/constant';
-import { apiConfig } from '../../common/service/BaseService';
-import { getRequest, postRequest } from '../../common/helpers/RequestHelper';
+import { getRequest } from '../../common/helpers/RequestHelper';
 
 const QuestionDetailsPage = () => {
     const [searchParams] = useSearchParams();
@@ -251,11 +247,11 @@ const QuestionDetailsPage = () => {
                                             <Question
                                                 isShowCorrectAnswer={isShowCorrectAnswer}
                                                 currentUser={currentUser}
-                                                canRate={currentUser !== question?.username}
-                                                canComment={currentUser !== question?.username}
+                                                canShowOptions={question?.username === currentUser}
+                                                topic={topics.topic}
                                                 {...question}
                                             />
-                                            <Divider />
+                                            <Divider sx={{borderWidth: '1px'}}/>
                                         </React.Fragment>
                                     ))
                                 ) : (

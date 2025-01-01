@@ -33,7 +33,7 @@ const AppRouter: React.FC = () => {
             <Routes>
                 <Route path='/'
                     element={user_token ?
-                        <Navigate to={"/question_detail"} />
+                        <Navigate to={"/newfeeds"} />
                         : <Navigate to={"/login"} />
                     }
                 />

@@ -7,7 +7,7 @@ export const BasicButton = styled(Button)({
     '&.MuiButton-root': {
         fontSize: '16px',
         fontWeight: 'bold',
-        padding: '16px',
+        padding: '5px',
         borderRadius: '8px',
         border: '1px solid #D1D5DC',
         boxShadow: '1px 1px 1px 0px #00000040',
@@ -27,7 +27,7 @@ export const MainButton = styled(Button)({
     '&.MuiButton-root': {
         fontSize: '16px',
         fontWeight: 'bold',
-        padding: '16px',
+        padding: '5px',
         borderRadius: '8px',
         border: '1px solid #D1D5DC',
         boxShadow: '1px 1px 1px 0px #00000040',
@@ -63,19 +63,31 @@ export const StyledTextField = styled(TextField)({
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: '8px',
-    '& .MuiFilledInput-root.Mui-focused': {
-        boxShadow: 'none',
-        border: `1px solid ${mainColor}`
-    },
+    border: `1px transparent`,
+    // '& .MuiFilledInput-root.Mui-focused': {
+    //     boxShadow: 'none',
+    //     border: `1px solid ${mainColor}`
+    // },
+    // '& .MuiOutlinedInput-root.Mui-focused': {
+    //     boxShadow: 'none',
+    //     border: `1px solid ${mainColor}`
+    // },
     '& .MuiFilledInput-input': {
         padding: '0 10px',
-        height: '34px',
+        height: '25px',
         width: '100%',
         borderRadius: '8px',
         backgroundColor: '#fff',
     },
-    '& .MuiFilledInput-root': {
+    '& .MuiOutlinedInput-input': {
+        padding: '0 10px',
+        height: '25px',
+        width: '100%',
+        borderRadius: '8px',
+        backgroundColor: '#fff',
+    },
+    '& .MuiOutlinedInput-root': {
         padding: '5px',
-        minHeight: '34px',
+        minHeight: '25px',
     },
 });
