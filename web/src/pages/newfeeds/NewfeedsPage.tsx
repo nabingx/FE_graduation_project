@@ -169,12 +169,10 @@ const NewfeedsPage = () => {
                                         <React.Fragment key={question.question_id + 'index-' + index}>
                                             <Question
                                                 isShowCorrectAnswer={isShowCorrectAnswer}
-                                                canRate={currentUser !== question?.username}
-                                                canComment={currentUser !== question?.username}
                                                 currentUser={currentUser}
                                                 {...question}
                                             />
-                                            <Divider />
+                                            <Divider sx={{borderWidth: '1px'}}/>
                                         </React.Fragment>
                                     ))
                                 ) : (

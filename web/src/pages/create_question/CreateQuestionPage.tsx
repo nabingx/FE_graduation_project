@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     useMediaQuery,
     Radio,
@@ -11,9 +11,9 @@ import {
     Checkbox,
 } from "@mui/material";
 
+import LoadingScreen from '../../components/LoadingScreen';
 import InputFile from '../../components/common/FileInput';
 import { MainButton, BasicButton, StyledTextField as TextField } from '../../components/common';
-import LoadingScreen from '../../components/LoadingScreen';
 
 import "./CreateQuestion.scss";
 
@@ -21,6 +21,7 @@ import Question from '../../components/common/Question';
 import DefaultLayout from '../../components/layout/default_layout';
 
 import { apiURL } from "../../common/constant";
+import { getRequest } from '../../common/helpers/RequestHelper';
 import { apiConfig, multipartApiConfig } from "../../common/service/BaseService";
 
 export default function CreateQuestionPage() {
@@ -49,6 +50,23 @@ export default function CreateQuestionPage() {
 
     const [resultQuestions, setResultQuestions] = useState<Array<any>>([]);
     const [isShowCorrectAnswer, setIsShowCorrectAnswer] = useState<boolean>(false);
+
+    const [currentUser, setCurrentUser] = useState<any>();
+
+    useEffect(() => {
+        getUserInfo();
+    }, [])
+
+    const getUserInfo = async () => {
+        try {
+            const res = await getRequest('/user-info');
+            if (res?.body?.status === 200) {
+                setCurrentUser(res?.body?.data?.username);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleRefresh = () => {
         setTagList([]);
@@ -450,7 +468,7 @@ export default function CreateQuestionPage() {
                                     </Stack>
                                 ))
                             }
-                            <BasicButton onClick={handleAddTag} sx={{ width: '50%' }}>
+                            <BasicButton onClick={handleAddTag} sx={{ width: '50%',}}>
                                 Thêm nhãn mới
                             </BasicButton>
                         </Stack>
@@ -493,7 +511,7 @@ export default function CreateQuestionPage() {
 
                         </Stack>
 
-                        
+
                         <FormControlLabel
                             label="Hiện đáp án đúng"
                             control={<Checkbox
@@ -508,13 +526,16 @@ export default function CreateQuestionPage() {
 
                 {
                     resultQuestions?.length > 0 ?
-                        resultQuestions?.map((question: any) => {
+                        resultQuestions?.map((question: any, index: number) => {
                             return (
-                                <Question
-                                    isNewQuestion
-                                    key={question?.question_id}
-                                    {...question}
-                                />
+                                <React.Fragment key={question.question_id + 'index-' + index}>
+                                    <Question
+                                        isNewQuestion
+                                        currentUser={currentUser}
+                                        {...question}
+                                    />
+                                    <Divider sx={{ borderWidth: '1px' }} />
+                                </React.Fragment>
                             )
                         })
                         : <></>
