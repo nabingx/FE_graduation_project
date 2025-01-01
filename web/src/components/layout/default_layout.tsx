@@ -8,6 +8,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import {UserOutlined} from "@ant-design/icons";
+import CustomizedInputBase from "./search_bar";
 
 interface INavItem {
     path: string;
@@ -72,9 +73,12 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
                         })
                     }
                 </Stack>
+                <Stack direction={"row"} gap={1}>
+                    <CustomizedInputBase />
+                </Stack>
                 <Stack direction={"row"} gap={2}>
                     <UserOutlined
-                        style={{marginLeft: "500px", fontSize: "30px" }}
+                        style={{marginLeft: "000px", fontSize: "30px" }}
                         onClick={() => handleRedirect("/infor-user")}
                         title="Thông tin cá nhân"
                     />

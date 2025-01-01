@@ -7,6 +7,8 @@ import CreateQuestionPage from "../pages/create_question/CreateQuestionPage";
 import QuestionDetailPage from "../pages/question_detail/QuestionDetailPage";
 import InforUserPage from "../pages/infor_user/InforUserPage";
 import NewfeedsPage from "../pages/newfeeds/NewfeedsPage";
+import SearchPage from "../pages/search_page/SearchPage";
+
 
 const AppRouter: React.FC = () => {
     let user_token = typeof window !== 'undefined'
@@ -69,6 +71,8 @@ const AppRouter: React.FC = () => {
 
                <Route path="/newfeeds" element={<NewfeedsPage/>} 
                />
+               <Route path="/searchpage" element={<SearchPage/>}
+                />
             </Routes>
         </Router>
     );
