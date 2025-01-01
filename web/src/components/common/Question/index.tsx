@@ -1,12 +1,12 @@
-import axios from "axios";
 import moment from "moment";
-import { useEffect, useState } from "react";
-import { Stack, Typography, Box, Grid2 as Grid, Chip, Rating } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Stack, Typography, Box, Grid2 as Grid, Chip, Rating, Menu, MenuItem, IconButton } from "@mui/material";
 import { BasicButton, MainButton, StyledTextField as TextField } from "..";
 
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import { deleteRequest, postRequest } from "../../../common/helpers/RequestHelper";
+import EditModal from "./edit_modal";
 
 export default function Question(props: any) {
     const {
@@ -43,6 +43,11 @@ export default function Question(props: any) {
     const [ratingValue, setRatingValue] = useState<number | null>(null);
     const [commentValue, setCommentValue] = useState<string>('');
 
+    const [openEditQuestion, setOpenEditQuestion] = useState<boolean>(false);
+
+    const [anchorEl, setAnchorEl] = useState<any>(null);
+    const [openOption, setOpenOption] = useState<boolean>(false);
+
     useEffect(() => {
         if (questionDetail?.tags) {
             setTagList(questionDetail?.tags.split(',')?.map((tag: string) => tag?.trim()));
@@ -72,10 +77,6 @@ export default function Question(props: any) {
             handleRefresh();
         }
     }, [isShowCorrectAnswer])
-
-    useEffect(() => {
-        console.log(questionDetail?.question_id, ratingValue);
-    }, [ratingValue])
 
     const handleClicked = (choice: string) => {
         if (isClicked !== '') {
@@ -122,12 +123,38 @@ export default function Question(props: any) {
     }
 
     const handleDeleteComment = async (comment_id: number) => {
-        const res = await deleteRequest(`/comment/${comment_id}`)
+        const res = await deleteRequest(`/comments/${comment_id}`)
         if (res?.status === 200) {
             setQuestionDetail((prev: any) => ({
                 ...prev,
                 ...res?.body?.data,
             }));
+        }
+    }
+
+    const handleOpenOptions = (event: any) => {
+        setAnchorEl(event.currentTarget);
+        setOpenOption(true);
+    }
+
+    const handleCloseOptions = () => {
+        setAnchorEl(null);
+        setOpenOption(false);
+    }
+
+    const handleEditQuestion = () => {
+        setOpenEditQuestion(true);
+    }
+
+    const handleDeleteQuestion = async (id: number) => {
+        try {
+            let res = await deleteRequest(`/delete-user-question?question_id=${id}`);
+            if (res?.status === 200) {
+                window.location.reload();
+            }
+
+        } catch (err) {
+            console.error(err);
         }
     }
 
@@ -139,6 +166,14 @@ export default function Question(props: any) {
                 padding: '16px',
             }}
         >
+            {
+                openEditQuestion &&
+                <EditModal
+                    open={openEditQuestion}
+                    onClose={() => setOpenEditQuestion(false)}
+                    {...questionDetail}
+                />
+            }
             <Stack
                 sx={{
                     background: 'white',
@@ -146,24 +181,48 @@ export default function Question(props: any) {
                     padding: '30px 12px',
                     fontSize: '24px',
                     fontWeight: 'bold',
-                    cursor: 'pointer',
                 }}
                 flex={1}
                 direction={"row"}
                 alignItems={"center"}
+                justifyContent={"space-between"}
                 gap={2}
-                onClick={() => window.location.href = `/question_detail?username=${questionDetail?.username}`}
             >
-                Người tạo:
-                <Typography variant="h6"
-                    sx={
-                        questionDetail?.username === currentUser ?
-                            { background: '#13ba00', padding: '8px', borderRadius: '8px', color: 'white' }
-                            : { background: 'gray', padding: '8px', borderRadius: '8px', color: 'white' }
-                    }
-                >
-                    {questionDetail?.username}
-                </Typography>
+                <Stack direction={"row"} gap={2} alignItems={"center"}>
+                    Người tạo:
+                    <Typography variant="h6"
+                        sx={
+                            questionDetail?.username === currentUser ?
+                                { background: '#13ba00', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', }
+                                : { background: 'gray', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', }
+                        }
+                        onClick={() => window.location.href = `/question_detail?username=${questionDetail?.username}`}
+                    >
+                        {questionDetail?.username}
+                    </Typography>
+                </Stack>
+
+                {
+                    questionDetail?.username === currentUser &&
+                    <React.Fragment>
+                        <IconButton onClick={handleOpenOptions}>
+                            Tùy chỉnh
+                        </IconButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={openOption}
+                            onClose={handleCloseOptions}
+                        >
+                            <MenuItem onClick={handleEditQuestion}>
+                                Chỉnh sửa câu hỏi
+                            </MenuItem>
+                            <MenuItem onClick={() => handleDeleteQuestion(questionDetail?.question_id)}>
+                                Xóa câu hỏi
+                            </MenuItem>
+                        </Menu>
+                    </React.Fragment>
+                }
+
             </Stack>
             <Stack direction={"row"} gap={3} justifyContent={"space-between"}>
                 <Stack
