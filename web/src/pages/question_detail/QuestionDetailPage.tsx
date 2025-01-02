@@ -81,7 +81,7 @@ const QuestionDetailsPage = () => {
 
     const downloadFile = async (topic: string) => {
         try {
-            const response = await fetch('http://103.138.113.68/export-questions', {
+            const response = await fetch('http://103.138.113.68/BE/export-questions', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ const QuestionDetailsPage = () => {
     };
     const downloadFileXml = async (topic: string) => {
         try {
-            const response = await fetch('http://103.138.113.68/export-questions-moodle', {
+            const response = await fetch('http://103.138.113.68/BE/export-questions-moodle', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
