@@ -43,7 +43,7 @@ export default function CreateQuestionPage() {
 
     const inputTextCaption = [
         'Nhập vào 1 câu đơn, tối đa 2 vế của câu và 100 ký tự.',
-        'Nhập vào 1 đoạn văn gồm tối đa 5 câu đơn, tối đa 1 câu gồm 2 vế và 100 ký tự.',
+        'Nhập vào 1 đoạn văn tối đa 100 ký tự, tối đa mỗi câu gồm 2 vế.',
         'Tải lên 1 file pdf chứa các đoạn text có thể sử dụng để tạo các câu hỏi.',
         'Tải lên 1 hình ảnh chứa các đoạn text có thể sử dụng để tạo các câu hỏi.',
     ];
