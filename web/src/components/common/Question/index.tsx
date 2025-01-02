@@ -155,6 +155,7 @@ export default function Question(props: any) {
                 ans3: data?.choices[2],
                 ans4: data?.choices[3],
             },
+            tags: data?.tags?.toString(),
         }
         const res = await postRequest(`/change-question?question_id=${apiBody?.question_id}`, apiBody)
         if (res?.status === 200) {
