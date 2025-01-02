@@ -488,10 +488,10 @@ export default function CreateQuestionPage() {
                     error ?
                         <Stack direction={"row"} gap={1} justifyContent={"space-between"}>
                             <Stack sx={{ padding: '12px', color: 'red', fontSize: '20px' }}>
-                                Some error has occurred, please check the form and try again.
+                                Đã có lỗi xảy ra, hãy kiểm tra lại đầu vào và thử lại.
                             </Stack>
                             <BasicButton onClick={() => setError(false)}>
-                                Dismiss
+                                Ẩn
                             </BasicButton>
                         </Stack>
                         : <></>
@@ -504,11 +504,6 @@ export default function CreateQuestionPage() {
                             <Typography variant="h5" sx={{ textAlign: 'center', }}>
                                 Kết quả:
                             </Typography>
-
-                            <MainButton onClick={handleRefresh}>
-                                Tạo câu hỏi mới
-                            </MainButton>
-
                         </Stack>
 
 
@@ -523,7 +518,6 @@ export default function CreateQuestionPage() {
                         : <></>
                 }
 
-
                 {
                     resultQuestions?.length > 0 ?
                         resultQuestions?.map((question: any, index: number) => {
@@ -532,6 +526,7 @@ export default function CreateQuestionPage() {
                                     <Question
                                         isNewQuestion
                                         currentUser={currentUser}
+                                        isShowCorrectAnswer={isShowCorrectAnswer}
                                         {...question}
                                     />
                                     <Divider sx={{ borderWidth: '1px' }} />
