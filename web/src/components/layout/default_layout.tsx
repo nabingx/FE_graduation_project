@@ -8,6 +8,10 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import {UserOutlined} from "@ant-design/icons";
+import { Avatar, Tooltip } from "antd";
+import { infoStore } from "../../pages/infor_user/InforStore";
+import { observer } from "mobx-react";
+import {useEffect} from "react";
 
 interface INavItem {
     path: string;
@@ -16,6 +20,10 @@ interface INavItem {
 }
 
 const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
+
+    useEffect(() => {
+        infoStore.fetchGetInfoUser();
+    }, []);
 
     const navigateList: INavItem[] = [
         {
@@ -73,11 +81,22 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
                     }
                 </Stack>
                 <Stack direction={"row"} gap={2}>
-                    <UserOutlined
-                        style={{marginLeft: "500px", fontSize: "30px" }}
-                        onClick={() => handleRedirect("/infor-user")}
-                        title="Thông tin cá nhân"
-                    />
+                    {infoStore.inforUser.avatar ? (
+                        <Tooltip title="Thông tin cá nhân">
+                            <Avatar
+                                src={infoStore.inforUser.avatar}
+                                style={{ marginLeft: "500px", fontSize: "80px", cursor: "pointer", height:"50px", width:"50px" }}
+                                onClick={() => handleRedirect("/infor-user")}
+                            />
+                        </Tooltip>
+                    ) : (
+                        <Tooltip title="Thông tin cá nhân">
+                            <UserOutlined
+                                style={{ marginLeft: "500px", fontSize: "30px", cursor: "pointer" }}
+                                onClick={() => handleRedirect("/infor-user")}
+                            />
+                        </Tooltip>
+                    )}
 
                     <NavigateButton onClick={handleLogout}>
                         Logout
@@ -93,4 +112,4 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
     )
 };
 
-export default DefaultLayout;
+export default observer(DefaultLayout);

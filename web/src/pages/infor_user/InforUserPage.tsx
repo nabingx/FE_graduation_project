@@ -4,34 +4,58 @@ import { infoStore } from "./InforStore";
 import { toJS } from "mobx";
 import "./Infor.scss";
 import DefaultLayout from "../../components/layout/default_layout";
-import { Form, Input, Button, Modal } from "antd";
+import { Form, Input, Button, Modal, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 
 const InforUserPage = () => {
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
+    const [isInfoModalVisible, setIsInfoModalVisible] = useState(false);
     const [form] = Form.useForm();
+    const [infoForm] = Form.useForm();
 
     useEffect(() => {
         infoStore.fetchGetInfoUser(); // Fetch thông tin người dùng
     }, []);
 
     const handleChangePassword = () => {
-        setIsModalVisible(true); // Hiển thị modal khi nhấn nút
+        setIsPasswordModalVisible(true); // Hiển thị modal thay đổi mật khẩu
     };
 
-    const handleCancel = () => {
-        setIsModalVisible(false); // Ẩn modal
+    const handleCancelPassword = () => {
+        setIsPasswordModalVisible(false); // Ẩn modal thay đổi mật khẩu
         form.resetFields(); // Reset giá trị form
     };
 
-    const handleOk = async () => {
+    const handleOkPassword = async () => {
         try {
             const values = await form.validateFields();
             infoStore.dataChangePassword.password = values.currentPassword;
             infoStore.dataChangePassword.new_password = values.newPassword;
 
-            await infoStore.fetchChangeInfoUser(); // Gọi hàm trong store để thay đổi mật khẩu
-            setIsModalVisible(false); // Đóng modal nếu thành công
+            await infoStore.fetchChangePassword(); // Gọi hàm trong store để thay đổi mật khẩu
+            setIsPasswordModalVisible(false); // Đóng modal nếu thành công
             form.resetFields(); // Reset form
+        } catch (errorInfo) {
+            console.error("Validation Failed:", errorInfo);
+        }
+    };
+
+    const handleChangeInfo = () => {
+        setIsInfoModalVisible(true); // Hiển thị modal thay đổi thông tin cá nhân
+        infoForm.setFieldsValue(toJS(infoStore.inforUser)); // Đặt giá trị mặc định
+    };
+
+    const handleCancelInfo = () => {
+        setIsInfoModalVisible(false); // Ẩn modal thay đổi thông tin cá nhân
+        infoForm.resetFields(); // Reset giá trị form
+    };
+
+    const handleOkInfo = async () => {
+        try {
+            const values = await infoForm.validateFields();
+            infoStore.dataChangeInfor = values; // Gán dữ liệu từ form
+            await infoStore.fetchChangeAvatarUser(); // Gọi API để cập nhật thông tin
+            setIsInfoModalVisible(false); // Đóng modal nếu thành công
         } catch (errorInfo) {
             console.error("Validation Failed:", errorInfo);
         }
@@ -40,7 +64,7 @@ const InforUserPage = () => {
     return (
         <DefaultLayout>
             <div className="infor-user">
-                <div className="title-infor">Thông tin cá nhân </div>
+                <div className="title-infor">Thông tin cá nhân</div>
                 <div className="infor-detail">
                     <div className="infor-detail__item">
                         <div className="infor-detail__avatar">
@@ -62,17 +86,26 @@ const InforUserPage = () => {
                                     Thay đổi mật khẩu
                                 </Button>
                             </Form.Item>
+                            <Form.Item>
+                                <Button
+                                    type="default"
+                                    onClick={handleChangeInfo}
+                                    className="change-info-button"
+                                >
+                                    Thay đổi thông tin cá nhân
+                                </Button>
+                            </Form.Item>
                         </Form>
                     </div>
                 </div>
             </div>
 
-            {/* Modal hiển thị khi nhấn "Thay đổi mật khẩu" */}
+            {/* Modal thay đổi mật khẩu */}
             <Modal
                 title="Thay đổi mật khẩu"
-                visible={isModalVisible}
-                onOk={handleOk}
-                onCancel={handleCancel}
+                visible={isPasswordModalVisible}
+                onOk={handleOkPassword}
+                onCancel={handleCancelPassword}
                 okText="Xác nhận"
                 cancelText="Hủy"
             >
@@ -95,6 +128,49 @@ const InforUserPage = () => {
                         ]}
                     >
                         <Input.Password placeholder="Nhập mật khẩu mới" />
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            {/* Modal thay đổi thông tin cá nhân */}
+            <Modal
+                title="Thay đổi thông tin cá nhân"
+                open={isInfoModalVisible}
+                onOk={handleOkInfo}
+                onCancel={handleCancelInfo}
+                okText="Lưu"
+                cancelText="Hủy"
+            >
+                <Form form={infoForm} layout="vertical">
+                    <Form.Item
+                        label="Tên người dùng"
+                        name="username"
+                        rules={[{ required: true, message: "Vui lòng nhập tên người dùng!" }]}
+                    >
+                        <Input placeholder="Nhập tên người dùng" />
+                    </Form.Item>
+                    <Form.Item
+                        label="Email"
+                        name="email"
+                        rules={[
+                            { required: true, message: "Vui lòng nhập email!" },
+                            { type: "email", message: "Email không hợp lệ!" },
+                        ]}
+                    >
+                        <Input placeholder="Nhập email" />
+                    </Form.Item>
+                    <Form.Item
+                        label="Avatar"
+                        name="avatar"
+                        rules={[{ required: true, message: "Vui lòng chọn ảnh đại diện!" }]}
+                    >
+                        <Upload
+                            maxCount={1}
+                            beforeUpload={() => false}
+                            listType="picture"
+                        >
+                            <Button icon={<UploadOutlined />}>Tải lên ảnh đại diện</Button>
+                        </Upload>
                     </Form.Item>
                 </Form>
             </Modal>

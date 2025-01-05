@@ -7,6 +7,16 @@ class InfoStore {
     isLoadingGetInfo: boolean = false;
     inforUser: any = {};
 
+    dataChangeInfor: {
+        username: string;
+        email: string;
+        avatar: File | null;
+    } = {
+        username: "",
+        email: "",
+        avatar: null,
+    };
+
     dataChangePassword: {
         password: string;
         new_password: string;
@@ -33,20 +43,35 @@ class InfoStore {
         }
     }
 
-    async fetchChangeInfoUser() {
+    async fetchChangePassword() {
         let {password, new_password} = this.dataChangePassword;
         const params = {
             password: password,
             new_password: new_password,
         };
-        const result = await inforService.fetchChangeInfoUser(params);
+        const result = await inforService.fetchChangePassword(params);
         if (result.status === HttpStatusCode.Ok) {
             toastUtils.success("Thay đổi mật khẩu thành công", "");
         } else {
             toastUtils.error("Mật khẩu cũ không đúng", "");
         }
     }
-    
+
+    async fetchChangeAvatarUser() {
+        let {username,email,avatar} = this.dataChangeInfor;
+        const params = {
+            username: username,
+            email: email,
+            avatar: avatar,
+        };
+        const result = await inforService.fetchChangeInfoUser(params);
+        if (result.status === HttpStatusCode.Ok) {
+            toastUtils.success("Thay đổi thông tin thành công", "");
+        } else {
+            toastUtils.error("Thay đổi thông tin thất bại", "");
+        }
+    }
+
 }
 
 export const infoStore = new InfoStore();

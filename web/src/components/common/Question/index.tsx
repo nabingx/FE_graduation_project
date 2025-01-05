@@ -5,6 +5,7 @@ import { BasicButton } from "..";
 
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import { Rate } from "antd";
 
 
 export default function Question(props: any) {
@@ -157,6 +158,18 @@ export default function Question(props: any) {
                 }
             </Stack>
 
+            <Stack direction={"row"} gap={1} alignItems={"center"}>
+                <Typography variant="body2" sx={{ fontSize: '16px', fontWeight: 'bold' }}>
+                    Đánh giá trung bình:
+                </Typography>
+                <Rate
+                    disabled
+                    value={average_rating}
+                    allowHalf
+                    style={{ color: '#faad14' }} // Màu vàng
+                />
+            </Stack>
+
             <Typography sx={{
                 background: 'white',
                 borderRadius: '4px',
@@ -164,6 +177,7 @@ export default function Question(props: any) {
             }}>
                 Nội dung câu đầu vào: {context}
             </Typography>
+
 
             <Typography sx={{
                 background: 'white',
