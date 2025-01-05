@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     useMediaQuery,
     Radio,
@@ -11,9 +11,9 @@ import {
     Checkbox,
 } from "@mui/material";
 
+import LoadingScreen from '../../components/LoadingScreen';
 import InputFile from '../../components/common/FileInput';
 import { MainButton, BasicButton, StyledTextField as TextField } from '../../components/common';
-import LoadingScreen from '../../components/LoadingScreen';
 
 import "./CreateQuestion.scss";
 
@@ -21,6 +21,7 @@ import Question from '../../components/common/Question';
 import DefaultLayout from '../../components/layout/default_layout';
 
 import { apiURL } from "../../common/constant";
+import { getRequest } from '../../common/helpers/RequestHelper';
 import { apiConfig, multipartApiConfig } from "../../common/service/BaseService";
 
 export default function CreateQuestionPage() {
@@ -42,13 +43,30 @@ export default function CreateQuestionPage() {
 
     const inputTextCaption = [
         'Nhập vào 1 câu đơn, tối đa 2 vế của câu và 100 ký tự.',
-        'Nhập vào 1 đoạn văn gồm tối đa 5 câu đơn, tối đa 1 câu gồm 2 vế và 100 ký tự.',
+        'Nhập vào 1 đoạn văn tối đa 100 ký tự, tối đa mỗi câu gồm 2 vế.',
         'Tải lên 1 file pdf chứa các đoạn text có thể sử dụng để tạo các câu hỏi.',
         'Tải lên 1 hình ảnh chứa các đoạn text có thể sử dụng để tạo các câu hỏi.',
     ];
 
     const [resultQuestions, setResultQuestions] = useState<Array<any>>([]);
     const [isShowCorrectAnswer, setIsShowCorrectAnswer] = useState<boolean>(false);
+
+    const [currentUser, setCurrentUser] = useState<any>();
+
+    useEffect(() => {
+        getUserInfo();
+    }, [])
+
+    const getUserInfo = async () => {
+        try {
+            const res = await getRequest('/user-info');
+            if (res?.body?.status === 200) {
+                setCurrentUser(res?.body?.data?.username);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleRefresh = () => {
         setTagList([]);
@@ -450,7 +468,7 @@ export default function CreateQuestionPage() {
                                     </Stack>
                                 ))
                             }
-                            <BasicButton onClick={handleAddTag} sx={{ width: '50%' }}>
+                            <BasicButton onClick={handleAddTag} sx={{ width: '50%',}}>
                                 Thêm nhãn mới
                             </BasicButton>
                         </Stack>
@@ -470,10 +488,10 @@ export default function CreateQuestionPage() {
                     error ?
                         <Stack direction={"row"} gap={1} justifyContent={"space-between"}>
                             <Stack sx={{ padding: '12px', color: 'red', fontSize: '20px' }}>
-                                Some error has occurred, please check the form and try again.
+                                Đã có lỗi xảy ra, hãy kiểm tra lại đầu vào và thử lại.
                             </Stack>
                             <BasicButton onClick={() => setError(false)}>
-                                Dismiss
+                                Ẩn
                             </BasicButton>
                         </Stack>
                         : <></>
@@ -486,14 +504,9 @@ export default function CreateQuestionPage() {
                             <Typography variant="h5" sx={{ textAlign: 'center', }}>
                                 Kết quả:
                             </Typography>
-
-                            <MainButton onClick={handleRefresh}>
-                                Tạo câu hỏi mới
-                            </MainButton>
-
                         </Stack>
 
-                        
+
                         <FormControlLabel
                             label="Hiện đáp án đúng"
                             control={<Checkbox
@@ -505,16 +518,19 @@ export default function CreateQuestionPage() {
                         : <></>
                 }
 
-
                 {
                     resultQuestions?.length > 0 ?
-                        resultQuestions?.map((question: any) => {
+                        resultQuestions?.map((question: any, index: number) => {
                             return (
-                                <Question
-                                    isNewQuestion
-                                    key={question?.question_id}
-                                    {...question}
-                                />
+                                <React.Fragment key={question.question_id + 'index-' + index}>
+                                    <Question
+                                        isNewQuestion
+                                        currentUser={currentUser}
+                                        isShowCorrectAnswer={isShowCorrectAnswer}
+                                        {...question}
+                                    />
+                                    <Divider sx={{ borderWidth: '1px' }} />
+                                </React.Fragment>
                             )
                         })
                         : <></>

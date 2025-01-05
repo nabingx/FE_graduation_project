@@ -37,9 +37,10 @@ const NewfeedsPage = () => {
     const [currentUser, setCurrentUser] = useState<any>();
 
     useEffect(() => {
+        console.log("Search value:");
         getPageData();
-        getUserInfo();
-    }, []);
+
+    }, [localStorage.getItem("searchValue")]);
 
     const handleOpenModal = (topic: string) => {
         setSelectedTopic(topic);
@@ -85,9 +86,13 @@ const NewfeedsPage = () => {
     }
 
     const getPageData = () => {
+        
         setLoading(true);
         axios
-            .get(`${apiURL}/random-questions`, {
+            .get(`${apiURL}/search_questions_by_keyword`, {
+                params: {
+                    keyword: localStorage.getItem("searchValue")
+                },
                 headers: {
                     ...apiConfig,
                     Authorization: `Bearer ${accessToken}`,
@@ -100,7 +105,7 @@ const NewfeedsPage = () => {
                     for (var key in data) {
                         list.push({
                             topic: key,
-                            questions: data[key],
+                            questions: Array.isArray(data[key]) ? data[key] : [],
                         });
                     }
                     setQuestionList(list);
@@ -125,7 +130,7 @@ const NewfeedsPage = () => {
             >
                 <LoadingScreen loading={loading} />
                 <Typography variant="h2" sx={{ textAlign: 'center', }}>
-                    Newsfeed
+                Search Results
                 </Typography>
 
                 <FormControlLabel
@@ -151,7 +156,10 @@ const NewfeedsPage = () => {
                                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                                     <Typography variant="h3">
                                         Chủ đề:&nbsp;
-                                        <span style={{ fontStyle: 'italic' }}>{topics.topic}</span>
+                                        <span style={{ fontStyle: 'italic' }}>
+                                            {topics.topic != 'detail'? topics.topic : localStorage.getItem("searchValue")}
+                                        </span>
+
                                     </Typography>
                                     <IconButton
                                         sx={{
@@ -166,7 +174,7 @@ const NewfeedsPage = () => {
                                 </Stack>
                                 {topics.questions?.length ? (
                                     topics.questions.map((question: any) => (
-                                        <React.Fragment key={question.question_id + 'index-' + index}>
+                                        <React.Fragment key={question.question_id}>
                                             <Question
                                                 isShowCorrectAnswer={isShowCorrectAnswer}
                                                 currentUser={currentUser}

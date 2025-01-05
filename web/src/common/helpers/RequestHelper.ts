@@ -1,6 +1,6 @@
 import axios, { HttpStatusCode } from "axios";
 import StorageService from "../service/StorageService";
-let apiBaseUrl = "http://103.138.113.68";
+let apiBaseUrl = "http://103.138.113.68/BE";
 let newHeaders: any = {'Content-Type': 'application/json'}
 if (StorageService.isTokenExits()) {
     newHeaders = {
