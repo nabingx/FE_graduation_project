@@ -53,8 +53,18 @@ const InforUserPage = () => {
     const handleOkInfo = async () => {
         try {
             const values = await infoForm.validateFields();
-            infoStore.dataChangeInfor = values; // Gán dữ liệu từ form
-            await infoStore.fetchChangeInfoUser(); // Gọi API để cập nhật thông tin
+            // Lấy file avatar
+            const avatarFile = values.avatar?.fileList?.[0]?.originFileObj;
+            const formData = new FormData();
+            formData.append("username", values.username);
+            formData.append("email", values.email);
+            if (avatarFile) {
+                formData.append("avatar", avatarFile);
+            }
+
+            // infoStore.dataChangeInfor = values; // Gán dữ liệu từ form
+            // await infoStore.fetchChangeInfoUser(); // Gọi API để cập nhật thông tin
+            await infoStore.fetchChangeInfoUser(formData); // Gọi API với formData
             setIsInfoModalVisible(false); // Đóng modal nếu thành công
         } catch (errorInfo) {
             console.error("Validation Failed:", errorInfo);

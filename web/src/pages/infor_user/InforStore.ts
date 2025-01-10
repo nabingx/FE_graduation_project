@@ -57,18 +57,38 @@ class InfoStore {
         }
     }
 
-    async fetchChangeInfoUser() {
-        let {username,email,avatar} = this.dataChangeInfor;
-        const params = {
-            username: username,
-            email: email,
-            avatar: avatar,
-        };
-        const result = await inforService.fetchChangeInfoUser(params);
-        if (result.status === HttpStatusCode.Ok) {
-            toastUtils.success("Thay đổi thông tin thành công", "");
-        } else {
-            toastUtils.error("Thay đổi thông tin thất bại", "");
+    // async fetchChangeInfoUser() {
+    //     let {username,email,avatar} = this.dataChangeInfor;
+    //     const params = {
+    //         username: username,
+    //         email: email,
+    //         avatar: avatar,
+    //     };
+    //     const result = await inforService.fetchChangeInfoUser(params);
+    //     if (result.status === HttpStatusCode.Ok) {
+    //         toastUtils.success("Thay đổi thông tin thành công", "");
+    //     } else {
+    //         toastUtils.error("Thay đổi thông tin thất bại", "");
+    //     }
+    // }
+    async fetchChangeInfoUser(formData: FormData) {
+        try {
+            const token = localStorage.getItem('auth_token');
+            const response = await fetch("http://103.138.113.68/BE/change-user-info", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+            console.log("User info updated:", data);
+            if (data.status === 200) {
+                this.inforUser = { ...this.inforUser, ...data };
+            }
+        } catch (error) {
+            console.error("Error updating user info:", error);
         }
     }
 
