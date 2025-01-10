@@ -54,7 +54,7 @@ const InforUserPage = () => {
         try {
             const values = await infoForm.validateFields();
             infoStore.dataChangeInfor = values; // Gán dữ liệu từ form
-            await infoStore.fetchChangeAvatarUser(); // Gọi API để cập nhật thông tin
+            await infoStore.fetchChangeInfoUser(); // Gọi API để cập nhật thông tin
             setIsInfoModalVisible(false); // Đóng modal nếu thành công
         } catch (errorInfo) {
             console.error("Validation Failed:", errorInfo);

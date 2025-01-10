@@ -57,7 +57,7 @@ class InfoStore {
         }
     }
 
-    async fetchChangeAvatarUser() {
+    async fetchChangeInfoUser() {
         let {username,email,avatar} = this.dataChangeInfor;
         const params = {
             username: username,
