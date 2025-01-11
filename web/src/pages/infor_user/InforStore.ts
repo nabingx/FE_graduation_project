@@ -86,6 +86,8 @@ class InfoStore {
             console.log("User info updated:", data);
             if (data.status === 200) {
                 this.inforUser = { ...this.inforUser, ...data };
+                toastUtils.success("Thay đổi thông tin thành công", "");
+                this.fetchGetInfoUser();
             }
         } catch (error) {
             console.error("Error updating user info:", error);

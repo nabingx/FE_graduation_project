@@ -1,4 +1,4 @@
-import { Stack, useMediaQuery, } from "@mui/material";
+import {Avatar, Stack, Tooltip, useMediaQuery,} from "@mui/material";
 import { Link } from "react-router-dom";
 
 import { NavigateButton } from "../common";
@@ -8,6 +8,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import { UserOutlined } from "@ant-design/icons";
 import CustomizedInputBase from "./search_bar";
+import {infoStore} from "../../pages/infor_user/InforStore";
 
 interface INavItem {
     path: string;
@@ -82,11 +83,22 @@ const DefaultLayout = ({ children }: { children: React.ReactNode }) => {
                     )
                 }
                 <Stack direction={"row"} gap={2}>
-                    <UserOutlined
-                        style={{ marginLeft: "000px", fontSize: "30px" }}
-                        onClick={() => handleRedirect("/infor-user")}
-                        title="Thông tin cá nhân"
-                    />
+                    {infoStore.inforUser.avatar ? (
+                        <Tooltip title="Thông tin cá nhân">
+                            <Avatar
+                                src={infoStore.inforUser.avatar}
+                                style={{ marginLeft: "500px", fontSize: "80px", cursor: "pointer", height:"50px", width:"50px" }}
+                                onClick={() => handleRedirect("/infor-user")}
+                            />
+                        </Tooltip>
+                    ) : (
+                        <Tooltip title="Thông tin cá nhân">
+                            <UserOutlined
+                                style={{ marginLeft: "500px", fontSize: "30px", cursor: "pointer" }}
+                                onClick={() => handleRedirect("/infor-user")}
+                            />
+                        </Tooltip>
+                    )}
 
                     <NavigateButton onClick={handleLogout}>
                         Logout
